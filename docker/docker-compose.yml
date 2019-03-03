@@ -1,0 +1,12 @@
+version: '3'
+services:
+  tunk:
+    build: .
+    image: tunk
+    container_name: tunk
+    tty: true
+    volumes:
+      - ../app:/app
+    ports:
+      - "9999:9999"
+      - "8888:8888"

@@ -1,0 +1,67 @@
+extends layout
+
+block content
+  div(style='margin: 10px; width: 320px; height: 240px;')
+    img(id="streamimage", class="xform", src="http://localhost:8080/?action=stream", style="height: 100%;")
+  br
+
+  div(class="tunk")
+    input(id="forward", type="button", value="↑", data-left="-100", data-right="-100")
+    br
+    input(id="left", type="button", value="←", data-left="-100", data-right="100")
+    input(id="right", type="button", value="→", data-left="100", data-right="-100")
+    br
+    input(id="back", type="button", value="↓", data-left="100", data-right="100")
+
+  script(type="text/javascript").
+    var motorInited = false;
+
+    mainFunction();
+
+    async function mainFunction(){
+      const i2cAccess = await navigator.requestI2CAccess();
+      const port = i2cAccess.ports.get(1);
+      const motor = new SteppingMotor(port, 0x0f);
+      motor.init();
+      motorInited = true;
+      console.log('STAND BY');
+
+      const forward_button = document.getElementById('forward');
+      const left_button = document.getElementById('left');
+      const right_button = document.getElementById('right');
+      const back_button = document.getElementById('back');
+
+      const script = document.createElement('script');
+      script.src = `http://${location.hostname}:8888/socket.io/socket.io.js`;
+      document.body.appendChild(script);
+
+      const socket_server_url = `http://${location.hostname}:8888`
+      var socket = null;
+
+      setTimeout(() => {
+        socket = io.connect(socket_server_url);
+        socket.emit('registration', 'tunk');
+        socket.on('move', function(json) {
+          console.log(json);
+          var parameter = JSON.parse(json);
+          motor.speed(1, parameter['left']);
+          motor.speed(2, parameter['right']);
+        });
+      }, 500);
+
+      ['forward', 'left', 'right', 'back'].forEach((id, _index, _array) => {
+        document.getElementById(id).onclick = async function(e) {
+          motor.speed(1, e.target.dataset.left);
+          motor.speed(2, e.target.dataset.right);
+          await sleep(1000);
+          motor.speed(1, 0);
+          motor.speed(2, 0);
+        }
+      });
+    }
+
+    function sleep(ms){
+      return new Promise( function(resolve) {
+        setTimeout(resolve, ms);
+      });
+    }

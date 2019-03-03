@@ -1,0 +1,49 @@
+extends mobile_layout
+
+block content
+  .controll
+    .video
+      img(src='http://192.168.10.13:8080/?action=stream', style='margin-left: 200px')
+    .arrows
+      input(id="forward", type="button", value="↑", data-left="-100", data-right="-100")
+      br
+      input(id="left", type="button", value="←", data-left="-100", data-right="100")
+      input(id="right", type="button", value="→", data-left="100", data-right="-100")
+      br
+      input(id="back", type="button", value="↓", data-left="100", data-right="100")
+
+  script(type="text/javascript").
+    const script = document.createElement('script');
+    script.src = `http://${location.hostname}:8888/socket.io/socket.io.js`;
+    document.body.appendChild(script);
+
+    const socket_server_url = `http://${location.hostname}:8888`
+    var socket = null;
+
+    setTimeout(() => {
+      socket = io.connect(socket_server_url);
+      socket.emit('registration', 'mobile');
+    }, 500);
+
+    const sendToServer = (json) => {
+    console.log(json);
+      if (socket) {
+        socket.emit('move', json);
+      }
+    }
+
+    const move = (left, right) => {
+      sendToServer(JSON.stringify({left: left, right: right}));
+    }
+
+    const stop = () => {
+      sendToServer(JSON.stringify({left: 0, right: 0}));
+    }
+
+    ['forward', 'left', 'right', 'back'].forEach((id, _index, _array) => {
+      const button = document.getElementById(id);
+      button.addEventListener("touchstart", (e) => { move(e.target.dataset.left, e.target.dataset.right) }, false);
+      button.addEventListener("touchend", stop, false);
+      button.addEventListener("touchcancel", stop, false);
+    });
+
