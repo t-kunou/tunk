@@ -21,7 +21,7 @@ block content
     async function mainFunction(){
       const i2cAccess = await navigator.requestI2CAccess();
       const port = i2cAccess.ports.get(1);
-      const motor = new SteppingMotor(port, 0x0f);
+      const motor = new Motor(port, 0x0f);
       motor.init();
       motorInited = true;
       console.log('STAND BY');
