@@ -1,4 +1,4 @@
-const SteppingMotor = function(i2cPort, slaveAddress) {
+const Motor = function(i2cPort, slaveAddress) {
   this.i2cPort = i2cPort;
   this.i2cSlave = null;
   this.slaveAddress = slaveAddress;
@@ -10,7 +10,7 @@ const SteppingMotor = function(i2cPort, slaveAddress) {
   this._speed2 = 0;
 };
 
-SteppingMotor.prototype = {
+Motor.prototype = {
   //
   // Constants
   //
