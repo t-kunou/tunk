@@ -10,4 +10,7 @@ WORKDIR /app
 EXPOSE 9999
 EXPOSE 8888
 
+COPY entry_point.sh /app
+ENTRYPOINT ["entry_point.sh"]
+
 CMD ["npm", "start"]
