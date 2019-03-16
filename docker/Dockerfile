@@ -10,7 +10,10 @@ WORKDIR /app
 EXPOSE 9999
 EXPOSE 8888
 
-COPY entry_point.sh /app
+VOLUME /app
+
+COPY entry_point.sh /usr/local/bin
+RUN chmod 744 /usr/local/bin/entry_point.sh
 ENTRYPOINT ["entry_point.sh"]
 
 CMD ["npm", "start"]
