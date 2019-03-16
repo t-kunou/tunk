@@ -1,5 +1,3 @@
-var dns = require("dns")
-
 var http = require('http');
 //サーバインスタンス作成
 var server = http.createServer(function (req, res) {
@@ -10,8 +8,6 @@ var io = require('socket.io').listen(server);
 
 server.listen(8888);//8888番ポートで起動
 console.log('Wait for connect');
-
-var tunkIp = null;
 
 var tunkSocket = null;
 var mobileSocket = null;
@@ -24,13 +20,9 @@ io.sockets.on('connection', function (socket) {
   socket.on('registration', function(name) {
     console.log('Registration from ' + name);
     if (name === 'tunk') {
-      dns.lookup('raspberrypi.local',  (err, address, family) => { tunkIp = address });
       tunkSocket = socket;
     } else if (name === 'mobile') {
       mobileSocket = socket;
-      if (tunkIp) {
-        mobileSocket.emit('tunkIp', tunkIp);
-      }
     }
   });
 

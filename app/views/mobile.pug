@@ -16,11 +16,9 @@ block content
     script.src = `http://${location.hostname}:8888/socket.io/socket.io.js`;
     document.body.appendChild(script);
 
-    const setVideo = (ip) => {
-      const video = document.createElement('img');
-      video.src = `http://${ip}:8080/?action=stream`;
-      document.getElementById('video').appendChild(video);
-    }
+    const video = document.createElement('img');
+    video.src = `http://${location.hostname}:8080/?action=stream`;
+    document.getElementById('video').appendChild(video);
 
     const socket_server_url = `http://${location.hostname}:8888`
     var socket = null;
@@ -28,9 +26,6 @@ block content
     setTimeout(() => {
       socket = io.connect(socket_server_url);
       socket.emit('registration', 'mobile');
-      socket.on('tunkIp', function(ip) {
-        setVideo(ip);
-      });
     }, 500);
 
     const sendToServer = (json) => {
